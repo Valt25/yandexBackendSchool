@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.14-alpine
+    ports:
+      - 8080:80
+    restart: "no"
+    volumes:
+      - ./config/:/etc/nginx/conf.d/:ro
+      - static-volume:/app/static/
+      - media-volume:/app/media/
+    depends_on:
+      - python
+    networks:
+      - project
+#    logging:
+#      driver: none
+
+  db:
+    image: postgres:10.4-alpine
+    env_file:
+      - db.env
+    restart: "no"
+    volumes:
+      - "db:/var/lib/postgresql/data"
+    networks:
+      - project
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready U postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+
+  python:
+    build: ./
+    command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+
+    #      context: ./backend/
+#      dockerfile: ./backend/Dockerfile
+    restart: "no"
+    depends_on:
+      - db
+    volumes:
+      - ./:/app
+    env_file:
+      - dev.env
+      - db.env
+    networks:
+      - project
+
+
+volumes:
+  db:
+  static-volume:
+  media-volume:
+
+
+networks:
+  project:
