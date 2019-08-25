@@ -8,7 +8,7 @@ class Citizen(models.Model):
     town = models.TextField()
     street = models.TextField()
     building = models.TextField()
-    appartement = models.PositiveIntegerField()
+    apartment = models.PositiveIntegerField()
     name = models.TextField()
     birth_date = models.DateField()
     gender = models.BooleanField()

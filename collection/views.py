@@ -1,10 +1,10 @@
 # Create your views here.
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView
+from rest_framework.response import Response
 
 from collection.models import Collection, Citizen
-from collection.serializers import CollectionCreateSerializer, CollectionShareSerializer, CitizenSerializer, \
-    PatchCitizenSerializer
+from collection.serializers import CollectionCreateSerializer, PatchCitizenSerializer, CitizenGetSerializer
 
 
 class CreateCollectionView(CreateAPIView):
@@ -12,9 +12,15 @@ class CreateCollectionView(CreateAPIView):
     queryset = Collection.objects.all()
 
 
-class RetrieveCollectionView(RetrieveAPIView):
-    serializer_class = CollectionShareSerializer
+class RetrieveCollectionView(GenericAPIView):
+    serializer_class = CitizenGetSerializer
     queryset = Collection.objects.all()
+
+    def get(self, *args, **kwargs):
+        instance = self.get_object()
+        citizens = instance.citizens.all()
+        serializer = self.get_serializer(citizens, many=True)
+        return Response(data={'data': serializer.data})
 
 
 class UpdateCitizenView(UpdateAPIView):

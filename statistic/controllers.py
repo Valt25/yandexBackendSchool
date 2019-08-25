@@ -33,5 +33,5 @@ def get_percentiles_by_town(collection: Collection):
         for citizen in citizens:
             citizen_ages.append(get_age(citizen.birth_date))
         res = np.percentile(citizen_ages, [50, 75, 99])
-        result.append({'town': town, 'p50': res[0], 'p75': res[1], 'p99': res[2]})
+        result.append({'town': town, 'p50': round(res[0], 2), 'p75': round(res[1], 2), 'p99': round(res[2], 2)})
     return result

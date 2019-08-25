@@ -16,7 +16,7 @@ class BirthdaysTestCase(APITestCase):
                                     town='Moscow',
                                     street='Lva Tolstogo',
                                     building='123',
-                                    appartement=45,
+                                    apartment=45,
                                     name='name',
                                     birth_date=datetime.date(1990, 7, 15),
                                     gender=True)
@@ -25,7 +25,7 @@ class BirthdaysTestCase(APITestCase):
                                     town='Moscow',
                                     street='Lva Tolstogo',
                                     building='123',
-                                    appartement=45,
+                                    apartment=45,
                                     name='name',
                                     birth_date=datetime.date(1990, 6, 15),
                                     gender=True)
@@ -34,7 +34,7 @@ class BirthdaysTestCase(APITestCase):
                                     town='Moscow',
                                     street='Lva Tolstogo',
                                     building='123',
-                                    appartement=45,
+                                    apartment=45,
                                     name='name',
                                     birth_date=datetime.date(1990, 5, 15),
                                     gender=True)
@@ -43,7 +43,7 @@ class BirthdaysTestCase(APITestCase):
                                     town='Moscow',
                                     street='Lva Tolstogo',
                                     building='123',
-                                    appartement=45,
+                                    apartment=45,
                                     name='name',
                                     birth_date=datetime.date(1990, 4, 15),
                                     gender=True)
@@ -91,7 +91,7 @@ class PercentileTestCase(APITestCase):
                                    town=town_name,
                                    street='Lva Tolstogo',
                                    building='123',
-                                   appartement=45,
+                                   apartment=45,
                                    name='name',
                                    birth_date=datetime.date(1990 - i, 1, 1),
                                    gender=True)
@@ -103,6 +103,8 @@ class PercentileTestCase(APITestCase):
         ages = [29 + i for i in range(1, amount)] ## Test will be failed in next year
         self.assertEqual(result['town'], town_name)
         percentiles = np.percentile(ages, [50, 75, 99])
+        print(ages)
+        print(percentiles)
         self.assertEqual(result['p50'], percentiles[0])
         self.assertEqual(result['p75'], percentiles[1])
         self.assertEqual(result['p99'], percentiles[2])

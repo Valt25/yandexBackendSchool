@@ -11,7 +11,7 @@ def citizen_object_and_models_identical(model, citizen, assert_obj):
     assert_obj.assertEqual(model.town, citizen['town'])
     assert_obj.assertEqual(model.street, citizen['street'])
     assert_obj.assertEqual(model.building, citizen['building'])
-    assert_obj.assertEqual(model.appartement, citizen['appartement'])
+    assert_obj.assertEqual(model.apartment, citizen['apartment'])
     assert_obj.assertEqual(model.name, citizen['name'])
     assert_obj.assertEqual(model.birth_date, datetime.datetime.strptime(citizen['birth_date'], '%d.%m.%Y').date())
     assert_obj.assertEqual(model.gender, citizen['gender'] == 'male')
@@ -28,7 +28,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "Москва",
             "street": "Льва Толстого",
             "building": "16к7стр5",
-            "appartement": 7,
+            "apartment": 7,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male",
@@ -48,7 +48,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "",
             "street": "Льва Толстого",
             "building": "16к7стр5",
-            "appartement": 7,
+            "apartment": 7,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male",
@@ -64,7 +64,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "Москва",
             "street": "Льва Толстого",
             "building": "16к7стр5",
-            "appartement": 7,
+            "apartment": 7,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male",
@@ -74,7 +74,7 @@ class CollectionCreateTestCase(APITestCase):
                 "town": "Алма-Ата",
                 "street": "Кажымукана",
                 "building": "26",
-                "appartement": 5,
+                "apartment": 5,
                 "name": "Валерий Валерьяновичь Валерьевич",
                 "birth_date": "29.09.1996",
                 "gender": "male",
@@ -85,7 +85,7 @@ class CollectionCreateTestCase(APITestCase):
                 "town": "Казань",
                 "street": "Льва Толстого",
                 "building": "16к7стр5",
-                "appartement": 71,
+                "apartment": 71,
                 "name": "Иванов Генадий Васильевич",
                 "birth_date": "20.07.2000",
                 "gender": "male",
@@ -103,7 +103,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "Москва",
             "street": "Льва Толстого",
             "building": "16к7стр5",
-            "appartement": 7,
+            "apartment": 7,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male",
@@ -113,7 +113,7 @@ class CollectionCreateTestCase(APITestCase):
                 "town": "Алма-Ата",
                 "street": "Кажымукана",
                 "building": "26",
-                "appartement": 5,
+                "apartment": 5,
                 "name": "Валерий Валерьяновичь Валерьевич",
                 "birth_date": "29.09.1996",
                 "gender": "male",
@@ -124,7 +124,7 @@ class CollectionCreateTestCase(APITestCase):
                 "town": "Казань",
                 "street": "Льва Толстого",
                 "building": "16к7стр5",
-                "appartement": 71,
+                "apartment": 71,
                 "name": "Иванов Генадий Васильевич",
                 "birth_date": "20.07.2000",
                 "gender": "male",
@@ -140,7 +140,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "Москва",
             "street": "Льва Толстого",
             "building": "16к7стр5",
-            "appartement": 7,
+            "apartment": 7,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male",
@@ -150,7 +150,7 @@ class CollectionCreateTestCase(APITestCase):
                 "town": "Алма-Ата",
                 "street": "Кажымукана",
                 "building": "26",
-                "appartement": 5,
+                "apartment": 5,
                 "name": "Валерий Валерьяновичь Валерьевич",
                 "birth_date": "29.09.1996",
                 "gender": "male",
@@ -161,13 +161,79 @@ class CollectionCreateTestCase(APITestCase):
                 "town": "Казань",
                 "street": "Льва Толстого",
                 "building": "16к7стр5",
-                "appartement": 71,
+                "apartment": 71,
                 "name": "Иванов Генадий Васильевич",
                 "birth_date": "20.07.2000",
                 "gender": "male",
                 "relatives": [1]
             }
         ]}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_undefined_field(self):
+        citizen = {
+            "citizen_id": 1,
+            "town": "",
+            "street": "Льва Толстого",
+            "building": "16к7стр5",
+            "name": "Иванов Иван Иванович",
+            "birth_date": "01.02.2000",
+            "gender": "male",
+            "relatives": [2, 28]
+        }
+        data = {'citizens': [citizen]}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_undefined_relatives_field(self):
+        citizen = {
+            "citizen_id": 1,
+            "town": "qwe",
+            "street": "Льва Толстого",
+            "building": "16к7стр5",
+            "name": "Иванов Иван Иванович",
+            "birth_date": "01.02.2000",
+            "gender": "male"
+        }
+        data = {'citizens': [citizen]}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_undefined_relatives_in_pack(self):
+        citizen1 = {
+            "citizen_id": 1,
+            "town": "123",
+            "street": "Льва Толстого",
+            "building": "16к7стр5",
+            "name": "Иванов Иван Иванович",
+            "birth_date": "01.02.2000",
+            "gender": "male"
+        }
+        citizen2 = {
+            "citizen_id": 2,
+            "town": "Алма-Ата",
+            "street": "Кажымукана",
+            "building": "26",
+            "apartment": 5,
+            "name": "Валерий Валерьяновичь Валерьевич",
+            "birth_date": "29.09.1996",
+            "gender": "male",
+            "relatives": [1]
+        }
+
+        citizen3 = {
+            "citizen_id": 3,
+            "town": "Алма-Ата",
+            "street": "Кажымукана",
+            "building": "26",
+            "apartment": 5,
+            "name": "Валерий Валерьяновичь Валерьевич",
+            "birth_date": "29.09.1996",
+            "gender": "male",
+            "relatives": [1]
+        }
+        data = {'citizens': [citizen1, citizen2, citizen3]}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, 400)
 
@@ -181,7 +247,7 @@ class CollectionGetTestCase(APITestCase):
                                town='Moscow',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True)
@@ -192,7 +258,7 @@ class CollectionGetTestCase(APITestCase):
                                town='Moscow',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True
@@ -202,7 +268,7 @@ class CollectionGetTestCase(APITestCase):
                                town='Moscow',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True
@@ -212,7 +278,7 @@ class CollectionGetTestCase(APITestCase):
                                town='Moscow',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True
@@ -224,7 +290,7 @@ class CollectionGetTestCase(APITestCase):
             url = '/imports/%d/citizens' % collection.id
             response = self.client.get(url, format='json')
             self.assertEqual(response.status_code, 200)
-            response_citizens = response.data['citizens']
+            response_citizens = response.data['data']
             for citizen in response_citizens:
                 citizen_obj = collection.citizens.get(citizen_id=citizen['citizen_id'])
                 citizen_object_and_models_identical(citizen_obj, citizen, self)
@@ -239,7 +305,7 @@ class CitizenPatchTestCase(APITestCase):
                                town='Moscow',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True)
@@ -249,7 +315,7 @@ class CitizenPatchTestCase(APITestCase):
                                town='Moscow1',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True
@@ -259,7 +325,7 @@ class CitizenPatchTestCase(APITestCase):
                                town='Moscow2',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True
@@ -269,7 +335,7 @@ class CitizenPatchTestCase(APITestCase):
                                town='Moscow3',
                                street='Lva Tolstogo',
                                building='123',
-                               appartement=45,
+                               apartment=45,
                                name='name',
                                birth_date=datetime.datetime(1990, 5, 15),
                                gender=True
@@ -307,3 +373,41 @@ class CitizenPatchTestCase(APITestCase):
         for key, value in data.items():
             self.assertEqual(citizen_resp[key], data[key])
         citizen_object_and_models_identical(original_citizen, citizen_resp, self)
+
+    def test_empty_request(self):
+        collection = Collection.objects.first()
+        original_citizen = collection.citizens.get(citizen_id=1)
+        data = {}
+        url = '/imports/%d/citizens/%d' % (original_citizen.collection_id, original_citizen.citizen_id)
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_change_citizen_id(self):
+        collection = Collection.objects.first()
+        original_citizen = collection.citizens.get(citizen_id=1)
+        data = {
+            'citizen_id': 2
+        }
+        url = '/imports/%d/citizens/%d' % (original_citizen.collection_id, original_citizen.citizen_id)
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_empty_field(self):
+        collection = Collection.objects.first()
+        original_citizen = collection.citizens.get(citizen_id=1)
+        data = {
+            'name': ''
+        }
+        url = '/imports/%d/citizens/%d' % (original_citizen.collection_id, original_citizen.citizen_id)
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_relate_self(self):
+        collection = Collection.objects.first()
+        original_citizen = collection.citizens.get(citizen_id=1)
+        data = {
+            'relatives': [original_citizen.citizen_id]
+        }
+        url = '/imports/%d/citizens/%d' % (original_citizen.collection_id, original_citizen.citizen_id)
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 400)

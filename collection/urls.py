@@ -1,4 +1,5 @@
 from django.urls import path
+
 from collection.views import CreateCollectionView, RetrieveCollectionView, UpdateCitizenView
 
 urlpatterns = [

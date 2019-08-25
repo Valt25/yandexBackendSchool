@@ -13,12 +13,13 @@ class CitizenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Citizen
         fields = (
-            'citizen_id', 'town', 'street', 'building', 'appartement', 'name', 'birth_date', 'gender', 'relatives')
+            'citizen_id', 'town', 'street', 'building', 'apartment', 'name', 'birth_date', 'gender', 'relatives')
 
 
 class CitizenCreateSerializer(CitizenSerializer):
 
     def validate(self, attrs):
+        res = super().validate(attrs)
         citizens = self.context['request'].data['citizens']
         relatives = attrs.get('relatives')
         current_citizen_id = attrs.get('citizen_id')
@@ -35,22 +36,33 @@ class CitizenCreateSerializer(CitizenSerializer):
             contains = False
             for other_citizen in citizens:
                 if other_citizen['citizen_id'] == relative:
-                    if current_citizen_id not in other_citizen['relatives']:
-                        raise ValidationError('Relative have to be mutual inclusive')
+                    if other_citizen.get('relatives') is not None:
+
+                        if current_citizen_id not in other_citizen['relatives']:
+                            raise ValidationError('Relative have to be mutual inclusive')
+                        else:
+                            contains = True
+                            break
                     else:
                         contains = True
                         break
             if not contains:
                 raise ValidationError('Relative have to link existed citizen')
 
-        return super().validate(attrs)
+        return res
 
 
 class PatchCitizenSerializer(CitizenSerializer):
 
     def validate(self, attrs):
+        if not len(attrs) > 0:
+            raise ValidationError('Empty request')
+        if attrs.get('citizen_id'):
+            raise ValidationError('Can not patch citizen_id')
         relatives = attrs.get('relatives')
         if relatives:
+            if self.instance.citizen_id in relatives:
+                raise ValidationError('The same citizen_id is prohibited')
             collection = self.instance.collection
             for relative in relatives:
                 if not collection.citizens.filter(citizen_id=relative).first():
