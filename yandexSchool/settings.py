@@ -34,11 +34,12 @@ PROJECT_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'collection'
+
 ]
 
 DJANGO_APPS = [
-
+    'collection',
+    'statistic'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
