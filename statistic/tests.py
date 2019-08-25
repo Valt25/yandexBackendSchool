@@ -103,8 +103,6 @@ class PercentileTestCase(APITestCase):
         ages = [29 + i for i in range(1, amount)] ## Test will be failed in next year
         self.assertEqual(result['town'], town_name)
         percentiles = np.percentile(ages, [50, 75, 99])
-        print(ages)
-        print(percentiles)
         self.assertEqual(result['p50'], percentiles[0])
         self.assertEqual(result['p75'], percentiles[1])
         self.assertEqual(result['p99'], percentiles[2])
