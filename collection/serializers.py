@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -19,10 +21,19 @@ class CitizenSerializer(serializers.ModelSerializer):
 class CitizenCreateSerializer(CitizenSerializer):
 
     def validate(self, attrs):
+        raw_citizens = self.context['request'].data['citizens']
         res = super().validate(attrs)
+        birth_date = res['birth_date']
+        if birth_date > datetime.datetime.utcnow().date():
+            raise ValidationError('Impossible date')
         citizens = self.context['request'].data['citizens']
         relatives = attrs.get('relatives')
         current_citizen_id = attrs.get('citizen_id')
+        for raw_citizen in raw_citizens:
+            if raw_citizen['citizen_id'] == current_citizen_id:
+                for key, value in raw_citizen.items():
+                    if key not in self.fields:
+                        raise ValidationError('Unneeded field "%s"' % key)
         same_id_count = 0
         for cit in citizens:
             if cit['citizen_id'] == current_citizen_id:

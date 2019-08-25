@@ -192,6 +192,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "qwe",
             "street": "Льва Толстого",
             "building": "16к7стр5",
+            "apartment": 1,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male"
@@ -206,6 +207,7 @@ class CollectionCreateTestCase(APITestCase):
             "town": "123",
             "street": "Льва Толстого",
             "building": "16к7стр5",
+            "apartment": 5,
             "name": "Иванов Иван Иванович",
             "birth_date": "01.02.2000",
             "gender": "male"
@@ -234,6 +236,39 @@ class CollectionCreateTestCase(APITestCase):
             "relatives": [1]
         }
         data = {'citizens': [citizen1, citizen2, citizen3]}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_unneded_field(self):
+        citizen = {
+            "citizen_id": 1,
+            "town": "qwe",
+            "street": "Льва Толстого",
+            "building": "16к7стр5",
+            "apartment": 5,
+            "name": "Иванов Иван Иванович",
+            "birth_date": "01.02.2000",
+            "gender": "male",
+            "relatives": [],
+            "more": 123
+        }
+        data = {'citizens': [citizen]}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_future_birthdate(self):
+        citizen = {
+            "citizen_id": 1,
+            "town": "qwe",
+            "street": "Льва Толстого",
+            "building": "16к7стр5",
+            "apartment": 5,
+            "name": "Иванов Иван Иванович",
+            "birth_date": "01.02.2123",
+            "gender": "male",
+            "relatives": [],
+        }
+        data = {'citizens': [citizen]}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, 400)
 
